@@ -39,6 +39,18 @@ pipeline {
             steps {
                 dir(path: env.BUILD_ID) {
                     unstash(name: 'compiled-results')
+                    
+                    // --- COMANDOS DE DEPURACIÃ“N ---
+                    sh 'echo "=== 1. Directorio actual ==="'
+                    sh 'pwd'
+                    sh 'echo "=== 2. Contenido del directorio actual ==="'
+                    sh 'ls -la'
+                    sh 'echo "=== 3. Contenido de la carpeta sources ==="'
+                    sh 'ls -la sources || echo "ERROR: La carpeta sources NO existe"'
+                    sh 'echo "=== 4. Lo que ve Docker dentro de /src ==="'
+                    sh "docker run --rm -v ${VOLUME} -w /src ${IMAGE} 'ls -la /src'"
+                    // --------------------------------
+                    
                     sh "docker run --rm -v ${VOLUME} -w /src ${IMAGE} 'pyinstaller -F add2vals.py'"
                 }
             }
