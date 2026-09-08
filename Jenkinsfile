@@ -37,8 +37,19 @@ pipeline {
                 IMAGE = 'cdrx/pyinstaller-linux:python2'
             }
             steps {
-                // Eliminar el dir(path: env.BUILD_ID) - no es necesario
+                // Restaurar archivos del stash
                 unstash(name: 'compiled-results')
+                
+                // === DEPURACIÃ“N: Ver quÃ© archivos existen ===
+                sh 'echo "=== Contenido del workspace ==="'
+                sh 'ls -la'
+                sh 'echo "=== Contenido de sources/ ==="'
+                sh 'ls -la sources/'
+                sh 'echo "=== Verificando add2vals.py ==="'
+                sh 'test -f sources/add2vals.py && echo "OK: add2vals.py existe" || echo "ERROR: add2vals.py NO existe"'
+                
+                // Ejecutar PyInstaller
+                sh "docker run --rm -v ${VOLUME} -w /src ${IMAGE} 'ls -la /src'"
                 sh "docker run --rm -v ${VOLUME} -w /src ${IMAGE} 'pyinstaller -F add2vals.py'"
             }
             post {
